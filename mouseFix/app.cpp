@@ -1,28 +1,17 @@
 #include <iostream>
 #include <Windows.h>
+#include "MouseHook.h"
 
 // cooldown in milliseconds
 #define COOLDOWN 200
 
-class MouseHook{
-private:
-	MouseHook() {}
-public:
-	SYSTEMTIME lastCheck;
-	static MouseHook& instance(){
-		static MouseHook mouseHook;
-		return mouseHook;
-	}
-	
-};
+
 HHOOK hMouseHook;
 SYSTEMTIME systemTime;
 MouseHook mouseHook = MouseHook::instance();
 
-FILETIME addTime(FILETIME ft)
-{
+FILETIME addTime(FILETIME ft) {
 	ULARGE_INTEGER tmp;
-
 	tmp.LowPart = ft.dwLowDateTime;
 	tmp.HighPart = ft.dwHighDateTime;
 
@@ -35,8 +24,7 @@ FILETIME addTime(FILETIME ft)
 }
 
 
-bool shouldBlock(SYSTEMTIME lastTime, SYSTEMTIME currentTime)
-{
+bool shouldBlock(SYSTEMTIME lastTime, SYSTEMTIME currentTime) {
 	// conver SYSTEMTIME TO FILETIME
 	FILETIME flastTime;
 	FILETIME fcurrentTime;
@@ -51,8 +39,7 @@ bool shouldBlock(SYSTEMTIME lastTime, SYSTEMTIME currentTime)
 	return true;
 }
 
-LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
-{
+LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
 	if (nCode < 0) return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
 	if (wParam == WM_LBUTTONDOWN) {
 		GetSystemTime(&systemTime);
@@ -61,7 +48,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 		if (shouldBlock(mouseHook.lastCheck, systemTime)) return CallNextHookEx(hMouseHook, -1, wParam, lParam);
 		
 		// allow and update lastCheck
-		std::cout << "allow" << std::endl;
+		std::cout << "Allowed click" << std::endl;
 
 		mouseHook.lastCheck = systemTime;
 		return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
@@ -72,7 +59,6 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 
 
 int main() {
-	
 	MSG msg;
 	HINSTANCE hInstance = GetModuleHandle(NULL);
 	GetSystemTime(&systemTime);
