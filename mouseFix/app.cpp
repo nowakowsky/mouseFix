@@ -5,7 +5,6 @@
 // cooldown in milliseconds
 #define COOLDOWN 200
 
-
 HHOOK hMouseHook;
 SYSTEMTIME systemTime;
 MouseHook mouseHook = MouseHook::instance();
@@ -22,7 +21,6 @@ FILETIME addTime(FILETIME ft) {
 
 	return ft;
 }
-
 
 bool shouldBlock(SYSTEMTIME lastTime, SYSTEMTIME currentTime) {
 	// conver SYSTEMTIME TO FILETIME
@@ -55,8 +53,6 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
 	}
 	return CallNextHookEx(hMouseHook, nCode, wParam, lParam);
 };
-
-
 
 int main() {
 	MSG msg;
